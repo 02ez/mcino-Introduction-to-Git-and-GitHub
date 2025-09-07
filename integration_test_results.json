@@ -1,0 +1,70 @@
+{
+  "summary": {
+    "total": 10,
+    "passed": 9,
+    "failed": 1,
+    "success_rate": 90.0
+  },
+  "tests": [
+    {
+      "test_name": "File Integrity - Required Files",
+      "passed": true,
+      "details": "All required files present",
+      "timestamp": 5.6743621826171875e-05
+    },
+    {
+      "test_name": "File Integrity - Shell Shebang",
+      "passed": true,
+      "details": "Correct shebang",
+      "timestamp": 0.00010085105895996094
+    },
+    {
+      "test_name": "File Integrity - Python Syntax",
+      "passed": true,
+      "details": "Valid Python syntax",
+      "timestamp": 0.0012507438659667969
+    },
+    {
+      "test_name": "Shell Script Execution - Basic",
+      "passed": true,
+      "details": "Calculated 1000*5*2/100=100",
+      "timestamp": 0.0051577091217041016
+    },
+    {
+      "test_name": "Shell Script Execution - Zero Principal",
+      "passed": true,
+      "details": "Handled zero principal correctly",
+      "timestamp": 0.00788116455078125
+    },
+    {
+      "test_name": "Python Script Execution - Function Call",
+      "passed": true,
+      "details": "Result: 1102.5",
+      "timestamp": 0.008091926574707031
+    },
+    {
+      "test_name": "Python Script Execution - Script Execution",
+      "passed": true,
+      "details": "Interactive mode works",
+      "timestamp": 0.024553775787353516
+    },
+    {
+      "test_name": "Cross-Script Validation",
+      "passed": false,
+      "details": "CI (1050.0) should be > SI principal + interest (1050.0)",
+      "timestamp": 0.028264522552490234
+    },
+    {
+      "test_name": "Performance Benchmarks - Python Performance",
+      "passed": true,
+      "details": "1000 calculations in 0.000s",
+      "timestamp": 0.028502941131591797
+    },
+    {
+      "test_name": "Performance Benchmarks - Shell Performance",
+      "passed": true,
+      "details": "10 calculations in 0.027s",
+      "timestamp": 0.05616116523742676
+    }
+  ]
+}
