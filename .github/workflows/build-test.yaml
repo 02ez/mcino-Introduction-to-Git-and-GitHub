@@ -1,0 +1,189 @@
+name: Build Test Lint
+
+on:
+  push:
+    branches: [ main, develop ]
+  pull_request:
+    branches: [ main, develop ]
+  workflow_dispatch:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  PYTHON_VERSION: '3.12'
+  COVERAGE_THRESHOLD: 80
+
+jobs:
+  lint-and-format:
+    name: Lint and Format
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    
+    steps:
+    - name: Harden Runner
+      uses: step-security/harden-runner@63c24ba6bd7ba022e95695ff85de572c04a18142 # v2.7.0
+      with:
+        egress-policy: audit
+        
+    - name: Checkout code
+      uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # v4.1.1
+      
+    - name: Set up Python
+      uses: actions/setup-python@0a5c61591373683505ea898e09a3ea4f39ef2b9c # v5.0.0
+      with:
+        python-version: ${{ env.PYTHON_VERSION }}
+        cache: 'pip'
+        
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install flake8 black isort pytest pytest-cov bandit safety
+        
+    - name: Lint Python code
+      run: |
+        flake8 . --count --select=E9,F63,F7,F82 --show-source --statistics
+        flake8 . --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics
+        
+    - name: Check Python formatting
+      run: |
+        black --check --diff .
+        isort --check-only --diff .
+        
+    - name: Lint shell scripts
+      run: |
+        sudo apt-get update && sudo apt-get install -y shellcheck
+        find . -name "*.sh" -exec shellcheck {} \;
+
+  test-python:
+    name: Test Python
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version: ['3.11', '3.12']
+        
+    steps:
+    - name: Harden Runner
+      uses: step-security/harden-runner@63c24ba6bd7ba022e95695ff85de572c04a18142 # v2.7.0
+      with:
+        egress-policy: audit
+        
+    - name: Checkout code
+      uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # v4.1.1
+      
+    - name: Set up Python ${{ matrix.python-version }}
+      uses: actions/setup-python@0a5c61591373683505ea898e09a3ea4f39ef2b9c # v5.0.0
+      with:
+        python-version: ${{ matrix.python-version }}
+        cache: 'pip'
+        
+    - name: Install test dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install pytest pytest-cov pytest-xdist pytest-mock
+        
+    - name: Run Python tests
+      run: |
+        pytest tests/ -v --cov=. --cov-report=xml --cov-report=term-missing --cov-fail-under=${{ env.COVERAGE_THRESHOLD }}
+        
+    - name: Upload coverage to Codecov
+      uses: codecov/codecov-action@c16abc29c95fcf9174b58eb7e1abf4c866893bc8 # v4.1.1
+      with:
+        file: ./coverage.xml
+        flags: python
+        name: python-${{ matrix.python-version }}
+
+  test-shell:
+    name: Test Shell Scripts
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    
+    steps:
+    - name: Harden Runner
+      uses: step-security/harden-runner@63c24ba6bd7ba022e95695ff85de572c04a18142 # v2.7.0
+      with:
+        egress-policy: audit
+        
+    - name: Checkout code
+      uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # v4.1.1
+      
+    - name: Install BATS
+      run: |
+        git clone https://github.com/bats-core/bats-core.git
+        cd bats-core
+        sudo ./install.sh /usr/local
+        
+    - name: Run shell script tests
+      run: |
+        chmod +x simple-interest.sh
+        bats tests/test_shell.bats
+
+  integration-test:
+    name: Integration Tests
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    needs: [test-python, test-shell]
+    
+    steps:
+    - name: Harden Runner
+      uses: step-security/harden-runner@63c24ba6bd7ba022e95695ff85de572c04a18142 # v2.7.0
+      with:
+        egress-policy: audit
+        
+    - name: Checkout code
+      uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # v4.1.1
+      
+    - name: Set up Python
+      uses: actions/setup-python@0a5c61591373683505ea898e09a3ea4f39ef2b9c # v5.0.0
+      with:
+        python-version: ${{ env.PYTHON_VERSION }}
+        
+    - name: Run integration tests
+      run: |
+        chmod +x simple-interest.sh
+        python tests/integration_test.py
+
+  build-artifacts:
+    name: Build and Package
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    needs: [lint-and-format, test-python, test-shell]
+    
+    steps:
+    - name: Harden Runner
+      uses: step-security/harden-runner@63c24ba6bd7ba022e95695ff85de572c04a18142 # v2.7.0
+      with:
+        egress-policy: audit
+        
+    - name: Checkout code
+      uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # v4.1.1
+      
+    - name: Set up Python
+      uses: actions/setup-python@0a5c61591373683505ea898e09a3ea4f39ef2b9c # v5.0.0
+      with:
+        python-version: ${{ env.PYTHON_VERSION }}
+        
+    - name: Build package
+      run: |
+        python -m pip install --upgrade pip build
+        python -m build
+        
+    - name: Upload build artifacts
+      uses: actions/upload-artifact@5d5d22a31266ced268874388b861e4b58bb5c2f3 # v4.3.1
+      with:
+        name: build-artifacts
+        path: dist/
+        retention-days: 30
+        
+    - name: Upload test results
+      uses: actions/upload-artifact@5d5d22a31266ced268874388b861e4b58bb5c2f3 # v4.3.1
+      if: always()
+      with:
+        name: test-results
+        path: |
+          coverage.xml
+          pytest-report.xml
+        retention-days: 30

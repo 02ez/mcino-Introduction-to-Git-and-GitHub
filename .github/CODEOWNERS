@@ -1,0 +1,30 @@
+# Financial Calculators
+
+* @02ez @github/security-team
+
+# Documentation
+README.md @02ez @github/docs-team
+*.md @02ez @github/docs-team
+
+# Security and Compliance
+.github/workflows/security-scan.yaml @github/security-team
+.github/workflows/supply-chain.yaml @github/security-team
+SECURITY.md @github/security-team
+
+# CI/CD Infrastructure
+.github/workflows/ @02ez @github/platform-team
+.github/dependabot.yml @github/security-team
+
+# Python Code
+*.py @02ez @github/python-team
+
+# Shell Scripts
+*.sh @02ez @github/devops-team
+
+# Configuration Files
+*.json @02ez @github/platform-team
+*.yaml @02ez @github/platform-team
+*.yml @02ez @github/platform-team
+
+# Tests
+tests/ @02ez @github/python-team @github/devops-team

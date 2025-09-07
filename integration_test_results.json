@@ -1,0 +1,70 @@
+{
+  "summary": {
+    "total": 10,
+    "passed": 10,
+    "failed": 0,
+    "success_rate": 100.0
+  },
+  "tests": [
+    {
+      "test_name": "File Integrity - Required Files",
+      "passed": true,
+      "details": "All required files present",
+      "timestamp": 8.320808410644531e-05
+    },
+    {
+      "test_name": "File Integrity - Shell Shebang",
+      "passed": true,
+      "details": "Correct shebang",
+      "timestamp": 0.00013113021850585938
+    },
+    {
+      "test_name": "File Integrity - Python Syntax",
+      "passed": true,
+      "details": "Valid Python syntax",
+      "timestamp": 0.0012853145599365234
+    },
+    {
+      "test_name": "Shell Script Execution - Basic",
+      "passed": true,
+      "details": "Calculated 1000*5*2/100=100",
+      "timestamp": 0.005430459976196289
+    },
+    {
+      "test_name": "Shell Script Execution - Zero Principal",
+      "passed": true,
+      "details": "Handled zero principal correctly",
+      "timestamp": 0.008162498474121094
+    },
+    {
+      "test_name": "Python Script Execution - Function Call",
+      "passed": true,
+      "details": "Result: 1102.5",
+      "timestamp": 0.008374929428100586
+    },
+    {
+      "test_name": "Python Script Execution - Script Execution",
+      "passed": true,
+      "details": "Interactive mode works",
+      "timestamp": 0.025397062301635742
+    },
+    {
+      "test_name": "Cross-Script Validation",
+      "passed": true,
+      "details": "SI interest: 50.0, CI total amount: 1050.0",
+      "timestamp": 0.02936530113220215
+    },
+    {
+      "test_name": "Performance Benchmarks - Python Performance",
+      "passed": true,
+      "details": "1000 calculations in 0.000s",
+      "timestamp": 0.029584884643554688
+    },
+    {
+      "test_name": "Performance Benchmarks - Shell Performance",
+      "passed": true,
+      "details": "10 calculations in 0.027s",
+      "timestamp": 0.05732154846191406
+    }
+  ]
+}
